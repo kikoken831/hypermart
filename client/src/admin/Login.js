@@ -38,25 +38,29 @@ export const Login = () => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({email: input.email, password: input.password}),
             };
-        fetch(`${API_URL}/login`, requestOptions).then((response) => {
-            if (response.status === 200) {
-                console.log("Valid login");
-                response.json().then((data) => {
-                    signIn({
-                        token: data.token,
-                        expiresIn: data.expiresIn,
-                        tokenType: data.tokenType,
-                        authState: data.authState,
+        try{
+            fetch(`${API_URL}/api/login`, requestOptions).then((response) => {
+                if (response.status === 200) {
+                    console.log("Valid login");
+                    response.json().then((data) => {
+                        signIn({
+                            token: data.token,
+                            expiresIn: data.expiresIn,
+                            tokenType: data.tokenType,
+                            authState: data.authState,
+                        });
                     });
-                });
-                navigate("admin/view");
-            } else {
-                messages.current.show({
-                    severity: "error",
-                    summary: "Invalid Credentials",
-                });
-            }
-        });
+                    navigate("/admin/view");
+                } else {
+                    messages.current.show({
+                        severity: "error",
+                        summary: "Invalid Credentials",
+                    });
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     return (

@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import {Login} from "./admin/Login";
 import {AdminView} from "./admin/AdminView";
 import {RequireAuth} from "react-auth-kit";
+import {CustomerView} from "./customer/CustomerView";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
                     redirectPath={"/admin"}>
                     <AdminView/>
                 </RequireAuth>}></Route>
+            <Route path="/" element={<CustomerView/>}></Route>
             <Route path="*" element={<>
             <div className="container">
                 <h1>404 or user view</h1>
