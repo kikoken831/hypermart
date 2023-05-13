@@ -1,10 +1,7 @@
 const express = require('express')
 const bodyParser = require("body-parser")
 const cors = require("cors")
-const fs = require("fs");
 const path = require("path");
-const pool = require("./common/db")
-const {json} = require("express");
 const app = express()
 const PORT = process.env.PORT || 8000;
 
