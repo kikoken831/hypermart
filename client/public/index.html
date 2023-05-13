@@ -1,43 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta
+          name="description"
+          content="Web site created using create-react-app"
+  />
+  <!-- PrimeReact -->
+  <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
+  <link rel="stylesheet" href="https://unpkg.com/primereact/resources/themes/lara-light-indigo/theme.css" />
+  <link rel="stylesheet" href="https://unpkg.com/primereact/resources/primereact.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/primeflex@2.0.0/primeflex.min.css" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+  <!-- Dependencies -->
+  <script src="https://unpkg.com/react/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/react-transition-group@4.4.2/dist/react-transition-group.js"></script>
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <!--
+    manifest.json provides metadata used when your web app is installed on a
+    user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+  -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBssn6Bxom4edVUUcOksjtU60NH-i2MlG4&libraries=places"
+          async defer></script>
+  <!--
+    Notice the use of %PUBLIC_URL% in the tags above.
+    It will be replaced with the URL of the `public` folder during the build.
+    Only files inside the `public` folder can be referenced from the HTML.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+    Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+    work correctly both with client-side routing and a non-root public URL.
+    Learn how to configure a non-root public URL by running `npm run build`.
+  -->
+  <title>Jack's HyperMart</title>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<!--
+  This HTML file is a template.
+  If you open it directly in the browser, you will see an empty page.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+  You can add webfonts, meta tags, or analytics to this file.
+  The build step will place the bundled scripts into the <body> tag.
+
+  To begin the development, run `npm start` or `yarn start`.
+  To create a production bundle, use `npm run build` or `yarn build`.
+-->
+<script src="https://unpkg.com/primereact/primereact.all.min.js"></script>
+<script type="text/javascript">
+  //<![CDATA[
+  if(PrimeFaces.widget.DataTable) {
+    //@Override
+    PrimeFaces.widget.DataTable.prototype.setupStickyHeader = function() {
+      var table = this.thead.parent(),
+              offset = table.offset(),
+              win = $(window),
+              $this = this,
+              stickyNS = 'scroll.' + this.id,
+              resizeNS = 'resize.sticky-' + this.id,
+              orginTableContent = this.jq.find('> .ui-datatable-tablewrapper > table'),
+              layoutTopbar = $('.topbar'),
+              layoutHeaderHeight = layoutTopbar ? layoutTopbar.outerHeight() : 0;  // added the height of layout header.
+
+      this.stickyContainer = $('<div class="ui-datatable ui-datatable-sticky ui-widget"><table></table></div>');
+      this.clone = this.thead.clone(false);
+      this.stickyContainer.children('table').append(this.thead);
+      table.prepend(this.clone);
+
+      this.stickyContainer.css({
+        position: 'absolute',
+        width: table.outerWidth(),
+        top: offset.top,
+        left: offset.left,
+        'z-index': ++PrimeFaces.zindex
+      });
+
+      this.jq.prepend(this.stickyContainer);
+
+      if(this.cfg.resizableColumns) {
+        this.relativeHeight = 0;
+      }
+
+      win.off(stickyNS).on(stickyNS, function() {
+        var scrollTop = win.scrollTop(),
+                tableOffset = table.offset();
+
+        if(scrollTop + layoutHeaderHeight > tableOffset.top) {
+          $this.stickyContainer.css({
+            'position': 'fixed',
+            'top': layoutHeaderHeight
+          })
+                  .addClass('ui-shadow ui-sticky');
+
+          if($this.cfg.resizableColumns) {
+            $this.relativeHeight = (scrollTop + layoutHeaderHeight) - tableOffset.top;
+          }
+
+          if(scrollTop + layoutHeaderHeight >= (tableOffset.top + $this.tbody.height()))
+            $this.stickyContainer.hide();
+          else
+            $this.stickyContainer.show();
+        }
+        else {
+          $this.stickyContainer.css({
+            'position': 'absolute',
+            'top': tableOffset.top
+          })
+                  .removeClass('ui-shadow ui-sticky');
+
+          if($this.stickyContainer.is(':hidden')) {
+            $this.stickyContainer.show();
+          }
+
+          if($this.cfg.resizableColumns) {
+            $this.relativeHeight = 0;
+          }
+        }
+      })
+              .off(resizeNS).on(resizeNS, function() {
+        $this.stickyContainer.hide();
+        setTimeout(function() {
+          $this.stickyContainer.css('left', orginTableContent.offset().left);
+          $this.stickyContainer.width(table.outerWidth());
+          $this.stickyContainer.show();
+        },350);
+      });
+
+      //filter support
+      this.clone.find('.ui-column-filter').prop('disabled', true);
+    };
+  }
+  //]]>
+</script>
+</body>
 </html>
