@@ -15,7 +15,8 @@ function App() {
     fetch(`${API_URL}/api`)
         .then(res => res.json())
         .then(data => {
-      setState(data)
+            console.log(data);
+            setState(data)
     })
   },[])
   return (
@@ -23,16 +24,11 @@ function App() {
       <Dialog visible={visible} onHide={() => setVisible(false)}>
         <p>Dialog</p>
       </Dialog>
-
-      <Button label="Show" onClick={() => setVisible(true)} />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {(typeof state.users === "undefined") ? <div>loading...</div> : <div>display data from server: {state.users.map((user) => (
-            <div>
-              {user}
-            </div>
+        {(typeof state === "undefined") ? <div>loading...</div> : <div>display data from server: {state.map((user,index) => (<div key={index}>{user.username}</div>
         ))}</div>}
-
+          <Button label="Show" onClick={() => setVisible(true)} />
       </header>
     </div>
   );
