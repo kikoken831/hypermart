@@ -24,7 +24,6 @@ export const Login = () => {
     }
 
     function submit() {
-        console.log(input);
         if (!input.email || !input.password) {
             messages.current.show({
                 severity: "error",
@@ -41,7 +40,6 @@ export const Login = () => {
         try{
             fetch(`${API_URL}/api/login`, requestOptions).then((response) => {
                 if (response.status === 200) {
-                    console.log("Valid login");
                     response.json().then((data) => {
                         signIn({
                             token: data.token,
@@ -62,7 +60,6 @@ export const Login = () => {
             console.log(e);
         }
     }
-
     return (
         <div style={{
             display: 'flex',
