@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {DataTable} from "primereact/datatable";
 import {Column} from "primereact/column";
+import {TabPanel, TabView} from "primereact/tabview";
+import {Button} from "primereact/button";
+import {CustomDialog} from "./CustomDialog";
+import {ItemApi} from "../common/ItemApi";
 
 export const Table = (props) => {
 
@@ -9,15 +13,67 @@ export const Table = (props) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [items, setItems] = useState([]);
     const [category, setCategory] = useState([]);
+    const [admin, setAdmin] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const [item, setItem] = useState({});
     useEffect(() => {
         setItems(props.items);
-        setCategory(props.category);
-    })
+        setCategory([{category_id: 0, category_name: "All"}, ...props.category]);
+        setAdmin(props.admin);
+    }, [props.items, props.category]);
+
+    //handle change of tab view
+    const handleChange = (e) => {
+        setActiveIndex(e.index);
+        if (e.index === 0) {
+            setItems(props.items);
+            return;
+        }
+        //filter all items by category id
+        let filteredItems = props.items.filter((item) => {
+            return item.category_id === e.index;
+        });
+        setItems(filteredItems);
+
+    }
+
+    function editItem(rowData) {
+        //set item to be edited
+        setItem(rowData);
+        console.log(rowData);
+        //show dialog
+        setVisible(true);
+    }
+
+    function confirmDeleteProduct(rowData) {
+        ItemApi.deleteItem(rowData.item_id).then((r) => {
+            console.log(r);
+            //update items
+            setItems(items.filter((item) => item.item_id !== rowData.item_id));
+        });
+    }
+
+    const actionBodyTemplate = (rowData) => {
+        return (
+            <React.Fragment>
+                <Button
+                    icon="pi pi-pencil"
+                    className="p-button-rounded p-button-primary mr-2"
+                    onClick={() => editItem(rowData)}
+                />
+                <Button
+                    icon="pi pi-trash"
+                    className="p-button-rounded p-button-danger"
+                    onClick={() => confirmDeleteProduct(rowData)}
+                />
+            </React.Fragment>
+        );
+    };
     const imageBodyTemplate = (rowData) => {
         return (
             <img
                 style={{
-                    width: "100px", height: "100px", boxShadow:
+                    width: "150px", height: "150px", boxShadow:
                         "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)", borderRadius: "5%"
                 }}
                 src={`${rowData.item_image}`}
@@ -32,25 +88,59 @@ export const Table = (props) => {
     };
     return (
         <div>
-            <DataTable
-                value={items}
-                className="rounded-5"
-                paginator
-                scrollable
-                dataKey="item_id"
-                rows={10}
-                first={first}
-                rowsPerPageOptions={[5, 10, 25]}>
-                <Column
-                    align={"left"}
-                    field="image"
-                    header="Image"
-                    style={{width: "10rem"}}
-                    body={imageBodyTemplate}
-                ></Column>
-                <Column field="item_name" header="Name" sortable align={"left"} style={{width: "20rem"}}></Column>
-                <Column field="item_price" header="Price"></Column>
-            </DataTable>
+            <TabView
+                activeIndex={activeIndex}
+                onTabChange={handleChange}
+            >
+                {category.map((cat) => {
+                    return (
+                        <TabPanel header={cat.category_name} key={cat.category_id}>
+                            <DataTable
+                                value={items}
+                                className="rounded-5"
+                                paginator
+                                scrollable
+                                dataKey="comp_id"
+                                rows={10}
+                                first={first}
+                                rowsPerPageOptions={[5, 10, 25]}>
+                                <Column
+                                    align={"left"}
+                                    field="image"
+                                    header="Image"
+                                    style={{width: "1rem"}}
+                                    body={imageBodyTemplate}
+                                ></Column>
+                                {cat.category_name === "All" && <Column
+                                    field="category_name"
+                                    header="Category"
+                                    sortable
+                                    style={{width: "5rem"}}
+                                ></Column>}
+                                <Column field="item_name" header="Name" sortable align={"left"}
+                                        style={{width: "7rem"}}></Column>
+                                <Column field="item_price" header="Price" sortable
+                                        style={{width: "5rem"}}></Column>
+                                <Column field="item_desc" header="Description" align={"left"}
+                                        style={{width: "10rem"}}></Column>
+                                <Column field="item_quantity" header="Quantity" sortable
+                                        align={admin ? "left" : "right"}
+                                        style={{width: "5rem"}}></Column>
+                                {admin && <Column
+                                    header="Action"
+                                    body={actionBodyTemplate}
+                                    exportable={false}
+                                    style={{width: "8rem"}}
+                                ></Column>}
+                            </DataTable>
+                        </TabPanel>
+                    )
+                })}
+            </TabView>
+            <CustomDialog visible={visible} setVisible={setVisible} item={item} setItem={setItem}
+                          category={category.filter(cat => {
+                              return cat.category_name !== "All";
+                          })}/>
         </div>
     );
 }

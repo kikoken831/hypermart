@@ -36,8 +36,8 @@ export const Login = () => {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({email: input.email, password: input.password}),
-            };
-        try{
+        };
+        try {
             fetch(`${API_URL}/api/login`, requestOptions).then((response) => {
                 if (response.status === 200) {
                     response.json().then((data) => {
@@ -47,8 +47,8 @@ export const Login = () => {
                             tokenType: data.tokenType,
                             authState: data.authState,
                         });
+                        navigate("view");
                     });
-                    navigate("/admin/view");
                 } else {
                     messages.current.show({
                         severity: "error",
@@ -60,6 +60,7 @@ export const Login = () => {
             console.log(e);
         }
     }
+
     return (
         <div style={{
             display: 'flex',

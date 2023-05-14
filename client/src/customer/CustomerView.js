@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {ItemApi} from "../common/ItemApi";
-import {Column} from "primereact/column";
-import {DataTable} from "primereact/datatable";
 import {CategoryApi} from "../common/CategoryApi";
 import {Table} from "../components/Table";
+import {Card} from "primereact/card";
 
 
 export const CustomerView = () => {
@@ -17,11 +16,21 @@ export const CustomerView = () => {
         CategoryApi.getAllCategory().then((data) => {
             setCategory(data);
         });
-    },[]);
+    }, []);
+
+    const footer = (
+        <div align={"center"}>
+            <h3>Thank you for shopping with us!</h3>
+            <h5>Not a customer? click <a href={"/admin"}>here</a></h5>
+        </div>
+    );
+
     return (
         <div>
             <h1>Customer View</h1>
-            <Table items={items} category={category}></Table>
+            <Card footer={footer}>
+                <Table items={items} category={category} admin={false}></Table>
+            </Card>
         </div>
     );
 }

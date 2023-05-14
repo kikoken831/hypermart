@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {ItemApi} from "../common/ItemApi";
 import {CategoryApi} from "../common/CategoryApi";
 import {Table} from "../components/Table";
@@ -15,11 +15,11 @@ export const AdminView = () => {
         CategoryApi.getAllCategory().then((data) => {
             setCategory(data);
         });
-    },[]);
+    }, []);
     return (
         <div>
             <h1>Admin View</h1>
-            <Table items={items} category={category}></Table>
+            <Table items={items} category={category} admin={true}></Table>
         </div>
     );
 }
