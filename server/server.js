@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8000;
 
 //services
 const {login} = require("./service/authentication")
-const {getAllItems, updateItem, deleteItem} = require("./service/itemService");
+const {getAllItems, updateItem, deleteItem, createItem} = require("./service/itemService");
 const {getAllCategory} = require("./service/categoryService");
 
 app.use(cors());
@@ -37,6 +37,10 @@ app.delete("/api/items/:id", async (req, res) => {
     await deleteItem(req, res);
 });
 
+//create item api
+app.post("/api/items", jsonParser, async (req, res) => {
+    await createItem(req, res);
+});
 app.get("*", (req, res, next) => {
     res.sendFile(path.join(__dirname, "/../client/build/index.html"));
 });

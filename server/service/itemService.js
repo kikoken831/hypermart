@@ -14,6 +14,11 @@ async function getAllItems(req, res) {
 }
 
 async function updateItem(req, res) {
+    //check if user is logged in
+    const token = req.header("x-auth-token");
+    if (!token) {
+        return res.status(401).send("Access Denied");
+    }
     try {
         const {id} = req.params;
         const {item_name, item_desc, item_price, item_quantity} = req.body;
@@ -36,4 +41,16 @@ async function deleteItem(req, res) {
     }
 }
 
-module.exports = {getAllItems, updateItem, deleteItem}
+//create item api
+async function createItem(req, res) {
+    try {
+        const {item_name, item_desc, item_price, item_quantity, category_id, item_image} = req.body;
+        const item = await pool.query("INSERT INTO items (item_name, item_desc, item_price, item_quantity, category_id, item_image, created_on) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *", [item_name, item_desc, item_price, item_quantity, category_id, item_image]);
+        res.json(item.rows[0]);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send();
+    }
+}
+
+module.exports = {getAllItems, updateItem, deleteItem, createItem}

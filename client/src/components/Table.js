@@ -5,6 +5,7 @@ import {TabPanel, TabView} from "primereact/tabview";
 import {Button} from "primereact/button";
 import {CustomDialog} from "./CustomDialog";
 import {ItemApi} from "../common/ItemApi";
+import {Toolbar} from "primereact/toolbar";
 
 export const Table = (props) => {
 
@@ -15,7 +16,17 @@ export const Table = (props) => {
     const [category, setCategory] = useState([]);
     const [admin, setAdmin] = useState(false);
     const [visible, setVisible] = useState(false);
-    const [item, setItem] = useState({});
+    const [item, setItem] = useState({
+        item_id: 0,
+        item_name: "",
+        item_price: 0,
+        item_image: "test",
+        category_id: 1,
+        item_desc: "",
+        item_category: "Category A",
+        item_quantity: 0,
+
+    });
     useEffect(() => {
         setItems(props.items);
         setCategory([{category_id: 0, category_name: "All"}, ...props.category]);
@@ -36,11 +47,22 @@ export const Table = (props) => {
         setItems(filteredItems);
 
     }
+    const leftToolbarTemplate = () => {
+        return (
+            <React.Fragment>
+                <Button
+                    label="New"
+                    icon="pi pi-plus"
+                    className="p-button-primary mr-2"
+                    onClick={setVisible.bind(this, true)}
+                />
+            </React.Fragment>
+        );
+    };
 
     function editItem(rowData) {
         //set item to be edited
         setItem(rowData);
-        console.log(rowData);
         //show dialog
         setVisible(true);
     }
@@ -95,6 +117,12 @@ export const Table = (props) => {
                 {category.map((cat) => {
                     return (
                         <TabPanel header={cat.category_name} key={cat.category_id}>
+                            {admin && cat.category_name === "All" ? (
+                                <Toolbar
+                                    className="mb-0 p-2"
+                                    left={leftToolbarTemplate}
+                                ></Toolbar>) : null}
+
                             <DataTable
                                 value={items}
                                 className="rounded-5"
@@ -138,6 +166,7 @@ export const Table = (props) => {
                 })}
             </TabView>
             <CustomDialog visible={visible} setVisible={setVisible} item={item} setItem={setItem}
+                          items={items} setItems={setItems}
                           category={category.filter(cat => {
                               return cat.category_name !== "All";
                           })}/>

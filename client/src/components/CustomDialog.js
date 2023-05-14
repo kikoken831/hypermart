@@ -30,8 +30,20 @@ export const CustomDialog = (props) => {
     }, [props.item, props.category, props.visible]);
 
     const saveItem = () => {
-        ItemApi.updateItem(item).then(r => console.log(r));
         console.log(item);
+        if (item.item_id === 0) {
+            ItemApi.createItem(item).then(r => console.log(r));
+            let _items = props.items;
+            _items.push(item);
+            props.setItems(_items);
+        } else {
+            ItemApi.updateItem(item).then(r => console.log(r));
+            let _items = props.items.filter((item) => {
+                return item.item_id !== props.item.item_id;
+            });
+            _items.push(item);
+            props.setItems(_items);
+        }
         onHide();
     }
     const onHide = () => {
